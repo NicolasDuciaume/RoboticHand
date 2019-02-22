@@ -1,0 +1,73 @@
+#ifndef FINALPROJECT_H
+#define FINALPROJECT_H
+
+#include <QWidget>
+#include <QString>
+#include <QList>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QTextEdit>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
+#include <QMessageBox>
+#include <QIcon>
+#include <QComboBox>
+#include <QDebug>
+class finalproject : public QWidget
+{
+    Q_OBJECT
+public:
+    finalproject(QWidget *parent = 0);
+    void drawForm(void); // method that draws the form
+    void addbaud(void);
+    void checkbaud(void);
+    ~finalproject();
+public slots: //custom slot methods
+    void serConnect(void); //connect to serial port
+    void serDisConnect(void); //disconnects from serial port
+   // void serSendTxBuff(void); //transmits data available in TX buffer
+   // void serClrTxBuff(void); //clears TX buffer
+    //void serClrRxBuff(void);//clears RX buffer
+    void dispRxData(void); //receives and displays data in Rx buffer
+    void enumerateSerPorts(void); // finds all serial ports
+    void flipTheBird(void);
+    void thumbsUp(void);
+    void pointing(void);
+    void peace(void);
+    void surfer(void);
+    void rockAndRoll(void);
+    void Free(void);
+private:
+    QSerialPort *serial;//declare required pointers/variables
+    QList<QSerialPortInfo> serinfo; //implicitly shared object i.e. no parent/child relationship
+    QPushButton *conbtn, *disconbtn, /**txbtn, *clrtxbtn*/ *refresh, *bird, *up, *point, *peaceSymb, *surf, *rock, *free;//*clrrxbtn
+   // QTextEdit *txbuff;//rxbuff
+    QLabel *statuslbl, *txlbl, *F1, *F2, *F3, *F4, *F5; //rxlbl
+    QVBoxLayout *vboxbuff, *vboxButtons;
+    QHBoxLayout *hboxbtns, *hboxAll; //*txhbox, *rxhbox;
+    QComboBox *box, *baud;
+    QString portname;
+    int y;
+    float finger1;
+    float finger2;
+    float finger3;
+    float finger4;
+    float finger5;
+
+    static const char START = 0x80;
+    static const char END = 0x81;
+    static const char FREE = 0x82;
+    static const char FLIP = 0x83;
+    static const char THUMB = 0x84;
+    static const char POINTING = 0x85;
+    static const char PEACE = 0x86;
+    static const char SURFER = 0x87;
+    static const char ROCK = 0x88;
+
+
+
+};
+
+#endif // FINALPROJECT_H
