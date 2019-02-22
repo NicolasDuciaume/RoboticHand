@@ -1,0 +1,217 @@
+#include <mbed.h>
+#include "mbed.h"
+#include "Servo.h"
+#include <string>
+
+Servo finger1(D15);
+AnalogIn flexPin1(A0);
+Servo finger2(D14);
+AnalogIn flexPin2(A1);
+Servo finger3(D13);
+AnalogIn flexPin3(A2);
+Servo finger4(D12);
+AnalogIn flexPin4(A3);
+Servo finger5(D11);
+AnalogIn flexPin5(A4);
+Serial pc(PA_2,PA_3);
+char valbuffer[20];
+
+#define START 0x80
+#define STOP   0x81
+#define FREE 0x82
+#define FLIP 0x83
+#define THUMB 0x84
+#define POINTING 0x85
+#define PEACE 0x86
+#define SURFER 0x87
+#define ROCK 0x88
+void free();
+void theBird();
+void thumbsUp();
+void pointing();
+void peace();
+void surfer();
+void rock();
+
+int main(void){
+    bool messageReady = false; // initially there's no RPC command
+    char i=0;
+    char next_val = 0;
+    char val =0;
+    while(1){
+        // If there's no command available in buffer let's look for one on the 
+        //serial port
+        if(messageReady == false){ 
+            next_val = pc.getc();
+            //if we receive START....this is beginning of command
+            if(next_val == START){ 
+                i=0;
+                valbuffer[i++] = next_val;
+                do{ //keep reading the rpc command bytes until we get to stop
+                    next_val = pc.getc();
+                    valbuffer[i++] = next_val;
+                }while(next_val != STOP);//we now have an RPC command
+                messageReady = true;
+            }
+        }
+        
+        if(messageReady == true){ //let's interpret this command
+                    switch(valbuffer[1]){
+                        case FREE:
+                            free();
+                            pc.putc(FREE);
+                            pc.putc(STOP);
+                            break;
+                        case FLIP:
+                            theBird();
+                            pc.putc(FLIP);
+                            pc.putc(STOP);
+                            break;
+                        case THUMB:
+                            thumbsUp();
+                            pc.putc(THUMB);
+                            pc.putc(STOP);
+                            break;
+                        case POINTING:
+                            pointing();
+                            pc.putc(POINTING);
+                            pc.putc(STOP);
+                            break;
+                        case PEACE:
+                            peace();
+                            pc.putc(PEACE);
+                            pc.putc(STOP);
+                            break;
+                        case SURFER:
+                            surfer();
+                            pc.putc(SURFER);
+                            pc.putc(STOP);
+                            break;
+                        case ROCK:
+                            rock();
+                            pc.putc(ROCK);
+                            pc.putc(STOP);
+                            break;
+                        default:
+                            pc.putc(0x00);
+                            break;
+                    }
+                    messageReady = false; 
+                    wait(0.2);
+                    while(pc.readable()){pc.getc();}//flush serial buffer
+                    // RPC command interpreted...wait for next command
+                    
+        }
+                        
+        
+        }
+}
+
+
+void free()
+{
+    for(;;){
+ 
+        float one = ((flexPin1.read()*5.4)- 4); 
+    finger1.write(one);
+    pc.printf("#1 %f", one);
+
+    float two = ((flexPin2.read()*5.4)- 4); 
+    finger2.write(two);
+    pc.printf("#2 %f", two);
+
+    float three = ((flexPin3.read() - 0.5)*3 ); 
+    finger3.write(three);
+    pc.printf("#3 %f",three);
+
+    float four = ((flexPin4.read()*5.4)- 4); 
+    finger4.write(four);
+    pc.printf("#4 %f", four);
+
+    float five = ((flexPin5.read()*5.4)- 4); 
+    finger5.write(five);
+    pc.printf("#5 %f", five);
+        
+    
+    }
+
+    
+}
+
+void theBird(){
+    finger1.write(1.1);
+    finger3.write(1.1);
+    finger2.write(0);
+    finger4.write(0);
+    finger5.write(0);
+    pc.printf("#1 0 degrees");
+    pc.printf("#2 180 degrees");
+    pc.printf("#3 0 degrees");
+    pc.printf("#4 180 degrees");
+    pc.printf("#5 180 degrees");
+    }
+    
+void thumbsUp() {
+    finger1.write(1.1);
+    finger2.write(0);
+    finger3.write(0);
+    finger4.write(0);
+    finger5.write(0);
+    pc.printf("#1 0 degrees");
+    pc.printf("#2 180 degrees");
+    pc.printf("#3 180 degrees");
+    pc.printf("#4 180 degrees");
+    pc.printf("#5 180 degrees");
+    }
+    
+void pointing(){
+    finger1.write(0);
+    finger2.write(1.1);
+    finger3.write(0);
+    finger4.write(0);
+    finger5.write(0);
+    pc.printf("#1 180 degrees");
+    pc.printf("#2 0 degrees");
+    pc.printf("#3 180 degrees");
+    pc.printf("#4 180 degrees");
+    pc.printf("#5 180 degrees");
+    }
+
+void peace(){
+    finger1.write(0);
+    finger2.write(1.1);
+    finger3.write(1.1);
+    finger4.write(0);
+    finger5.write(0);
+    pc.printf("#1 180 degrees");
+    pc.printf("#2 0 degrees");
+    pc.printf("#3 0 degrees");
+    pc.printf("#4 180 degrees");
+    pc.printf("#5 180 degrees");
+    }
+    
+void surfer(){
+    finger1.write(1.1);
+    finger2.write(0);
+    finger3.write(0);
+    finger4.write(0);
+    finger5.write(1.1);
+    pc.printf("#1 0 degrees");
+    pc.printf("#2 180 degrees");
+    pc.printf("#3 180 degrees");
+    pc.printf("#4 180 degrees");
+    pc.printf("#5 0 degrees");
+    }
+    
+void rock(){
+    finger1.write(1.1);
+    finger2.write(1.1);
+    finger3.write(0);
+    finger4.write(0);
+    finger5.write(1.1);
+    pc.printf("#1 0 degrees");
+    pc.printf("#2 0 degrees");
+    pc.printf("#3 180 degrees");
+    pc.printf("#4 180 degrees");
+    pc.printf("#5 0 degrees");
+    }
